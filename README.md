@@ -22,6 +22,13 @@ Available variables are listed below, along with default values (see `defaults/m
       ...
     firewall(6)_allowed_udp_ports: []
 
+List of ports allowed to access:
+    firewall_allowed_tcp_ports_out: []
+    firewall_allowed_udp_ports_out: []
+
+List of hosts allowed to access over http/https
+    firewall_allowed_http_out: [] - by default allows all outbound http/https connections
+
 A list of TCP or UDP ports (respectively) to open to incoming traffic.
 
     firewall(6)_forwarded_tcp_ports:
