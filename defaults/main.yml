@@ -5,10 +5,14 @@ firewall_allowed_tcp_ports:
   - "80"
   - "443"
 firewall_allowed_udp_ports: []
+firewall_allowed_tcp_ports_out: []
+firewall_allowed_udp_ports_out: []
 firewall_forwarded_tcp_ports: []
 firewall_forwarded_udp_ports: []
 firewall_additional_rules: []
 firewall_log_dropped_packets: true
+firewall_allowed_http_out:
+  - "0.0.0.0/0" 
 firewall_ipv6_enabled: false
 firewall6_allowed_udp_ports: []
 firewall6_allowed_tcp_ports: []

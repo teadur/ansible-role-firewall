@@ -35,6 +35,7 @@ iptables -X
 
 # Accept traffic from loopback interface (localhost).
 iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
 
 # Forwarded ports.
 {# Add a rule for each forwarded port #}
@@ -56,6 +57,23 @@ iptables -A INPUT -p tcp -m tcp --dport {{ port }} -j ACCEPT
 iptables -A INPUT -p udp -m udp --dport {{ port }} -j ACCEPT
 {% endfor %}
 
+# Outbound port to any host
+{# Add a rule for each open port #}
+{% for port in firewall_allowed_tcp_ports_out %}
+iptables -A INPUT -p tcp -m tcp --dport {{ port }} -j ACCEPT
+{% endfor %}
+{% for port in firewall_allowed_udp_ports_out %}
+iptables -A INPUT -p udp -m udp --dport {{ port }} -j ACCEPT
+{% endfor %}
+
+
+# Outbound http(s) hosts
+{# Add a rule for each host #}
+{% for host in firewall_allowed_http_out %}
+iptables -A OUTPUT -p tcp -m tcp --dport 80 -d {{ host }} -j ACCEPT
+iptables -A OUTPUT -p tcp -m tcp --dport 443 -d {{ host }} -j ACCEPT
+{% endfor %}
+
 # Accept icmp ping requests.
 iptables -A INPUT -p icmp -j ACCEPT
 
@@ -74,14 +92,14 @@ iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
 
 # Allow established connections:
 iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-
+iptables -A OUTPUT  -m state --state ESTABLISHED,RELATED -j ACCEPT
 # Log EVERYTHING (ONLY for Debug).
 # iptables -A INPUT -j LOG
 
 {% if firewall_log_dropped_packets %}
 # Log droped packets  at 15/minute max.
-iptables -A INPUT -m limit --limit 15/minute -j LOG --log-level 7 --log-prefix "Dropped by firewall: "
-iptables -A OUTPUT -m limit --limit 15/minute -j LOG --log-level 7 --log-prefix "Dropped by firewall: "
+iptables -A INPUT -m limit --limit 15/minute -j LOG --log-level 7 --log-prefix "INPUT: Dropped by firewall: "
+iptables -A OUTPUT -m limit --limit 15/minute -j LOG --log-level 7 --log-prefix "OUTPUT: Dropped by firewall: "
 
 {% endif %}
 
